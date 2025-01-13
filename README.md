@@ -1,7 +1,7 @@
 # BookStoreApp
 
 ## Overview
-BookStoreApp is a web-based application built using **ASP.NET Core MVC** with **Entity Framework Core** for managing books in an online bookstore. The platform enables users to upload, download, and manage books. It includes role-based authentication, allowing admin users to manage book records and oversee the platform.
+BookStoreApp is a web-based application built using **ASP.NET Core MVC** with **Entity Framework Core** for managing books in an online bookstore. The platform enables users to upload, download, and manage books.
 
 ## Features
 
