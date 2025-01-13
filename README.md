@@ -17,11 +17,10 @@ BookStoreApp is a web-based application built using **ASP.NET Core MVC** with **
 
 ### Database Integration
 - Integrated with **SQL Server** using **Entity Framework Core**.
-- Handles migrations for seamless database schema updates.
-
+  
 ### File Uploads
-- Users can upload PDF files for books.
-- Files are stored in the `wwwroot/uploads/books` directory with dynamically generated paths.
+- Upload PDF files for books.
+- Files are stored in the `wwwroot/uploads/books` directory.
 
 ### Error Handling
 - Provides detailed error messages for debugging during development.
