@@ -1,0 +1,108 @@
+﻿@model BookStoreApp.Helpers.AboutViewModel
+
+@{
+    ViewData["Title"] = "About";
+}
+
+<div class="d-flex flex-column">
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Left Sidebar with Search -->
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5>Search Books</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                            <input type="text" id="bookSearch" class="form-control mb-3"
+                                   placeholder="Search book by name..." style="height: 48px;" />
+                            <ul id="bookList" class="list-group" style="overflow-y: auto;">
+                                @foreach (var book in Model.Books)
+                                {
+                                    <li class="list-group-item">
+                                        <a href="@Url.Action("Details", "Books", new { id = book.BookId })"
+                                           class="text-decoration-none">@book.Title</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Main Content Area -->
+                <div class="col-md-9">
+                    <!-- Welcome Section -->
+                    <div class="mb-4 text-center">
+                        <h1 class="display-4 fw-bold text-primary">@ViewData["Title"]</h1>
+                        <p class="lead">Welcome to <span class="text-primary">BookStoreApp</span>, your gateway to endless knowledge and stories!</p>
+                    </div>
+
+                    <!-- Mission Section -->
+                    <div class="mb-5 p-4 bg-light rounded shadow-sm text-center">
+                        <h3 class="text-success"><i class="fas fa-bullseye"></i> Our Mission</h3>
+                        <p class="mb-0">
+                            At <span class="fw-bold">BookStoreApp</span>, our mission is to provide an extensive library of books for free access and easy downloads.<br />
+                            We aim to create a community where knowledge is shared and learning is celebrated.
+                        </p>
+                    </div>
+
+                    <!-- Why Choose Us Section -->
+                    <div class="mb-5">
+                        <h3 class="text-info"><i class="fas fa-star"></i> Why Choose Us?</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fas fa-check text-success"></i> Wide variety of books across genres.</li>
+                            <li class="list-group-item"><i class="fas fa-check text-success"></i> User-friendly interface for easy navigation.</li>
+                            <li class="list-group-item"><i class="fas fa-check text-success"></i> Seamless search and download experience.</li>
+                            <li class="list-group-item"><i class="fas fa-check text-success"></i> Regularly updated with the latest titles and authors.</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Contact Us Section 
+                    <div class="p-4 bg-primary text-white rounded shadow-sm">
+                        <h3><i class="fas fa-envelope"></i> Contact Us</h3>
+                        <p>If you have any questions or feedback, feel free to contact us:</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-envelope text-warning"></i> Email: <a href="mailto:support@bookstoreapp.com" class="text-white fw-bold">support@bookstoreapp.com</a></li>
+                            <li><i class="fas fa-phone-alt text-warning"></i> Phone: <a href="tel:+1234567890" class="text-white fw-bold">+1-234-567-890</a></li>
+                            <li><i class="fas fa-map-marker-alt text-warning"></i> Address: 123 Book Street, Reading City</li>
+                        </ul>
+                    </div> -->
+
+                    <!-- Explore More Section -->
+                    <div class="mt-5 text-center">
+                        <h4 class="text-secondary">Ready to Explore?</h4>
+                        <a href="/Books/Index" class="btn btn-lg btn-success">
+                            <i class="fas fa-book"></i> Browse Books
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("bookSearch");
+        const bookList = document.getElementById("bookList");
+        const bookItems = bookList.querySelectorAll("li");
+
+        // Add an event listener to the search input
+        searchInput.addEventListener("input", function () {
+            const searchQuery = searchInput.value.toLowerCase();
+
+            bookItems.forEach(item => {
+                const bookTitle = item.textContent.toLowerCase();
+                if (bookTitle.includes(searchQuery)) {
+                    item.style.display = ""; // Show item
+                } else {
+                    item.style.display = "none"; // Hide item
+                }
+            });
+        });
+    });
+</script>

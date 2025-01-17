@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookStoreApp.Data;
 using BookStoreApp.Models;
+using BookStoreApp.Helpers;
+using BookStoreApp.ViewModels;
 
 namespace BookStoreApp.Controllers
 {
@@ -19,26 +22,48 @@ namespace BookStoreApp.Controllers
             _context = context;
         }
 
-        // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> About()
         {
-            return View(await _context.Books.ToListAsync());
+            // Fetch all books from the database asynchronously
+            var books = await _context.Books.ToListAsync();
+
+            // Pass the books to the AboutViewModel
+            var viewModel = new AboutViewModel
+            {
+                Books = books
+            };
+
+            return View(viewModel);
+        }
+
+        // GET: Books
+        public async Task<IActionResult> Index(string query, int page = 1, int pageSize = 8)
+        {
+            var books = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                books = books.Where(b => b.Title.Contains(query) || b.Author.Contains(query));
+            }
+
+            var paginatedBooks = await PaginatedList<Book>.CreateAsync(books, page, pageSize);
+
+            var viewModel = new PaginatedBooksViewModel
+            {
+                Books = paginatedBooks,
+                SearchQuery = query
+            };
+
+            return View(viewModel);
         }
 
         // GET: Books/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookId == id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            var book = await _context.Books.FirstOrDefaultAsync(m => m.BookId == id);
+            if (book == null) return NotFound();
 
             return View(book);
         }
@@ -50,8 +75,6 @@ namespace BookStoreApp.Controllers
         }
 
         // POST: Books/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Author,Description")] Book book, IFormFile uploadedFile)
@@ -62,128 +85,84 @@ namespace BookStoreApp.Controllers
                 {
                     if (uploadedFile != null && uploadedFile.Length > 0)
                     {
-                        // Define the directory for storing files
-                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "books");
-
-                        // Ensure the directory exists
+                        var uploadsFolder = Path.Combine("wwwroot", "uploads", "books");
                         Directory.CreateDirectory(uploadsFolder);
 
-                        // Generate a unique file name based on the title
-                        var sanitizedTitle = string.Join("_", book.Title.Split(Path.GetInvalidFileNameChars())); // Sanitize title
-                        var fileName = sanitizedTitle + Path.GetExtension(uploadedFile.FileName);
+                        var sanitizedTitle = string.Join("_", book.Title.Split(Path.GetInvalidFileNameChars()));
+                        var fileName = $"{sanitizedTitle}{Path.GetExtension(uploadedFile.FileName)}";
                         var filePath = Path.Combine(uploadsFolder, fileName);
 
-                        // Save the file to the server
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            await uploadedFile.CopyToAsync(fileStream);
+                            await uploadedFile.CopyToAsync(stream);
                         }
 
-                        // Set auto-generated properties
-                        book.FilePath = $"/uploads/books/{fileName}"; // Store relative path
-                        book.UploadDate = DateTime.Now; // Current date and time
-                        book.DownloadCount = 0; // Initialize download count
+                        book.FilePath = $"/uploads/books/{fileName}";
+                        book.UploadDate = DateTime.Now;
+                        book.DownloadCount = 0;
 
-                        // Add book to the database
                         _context.Add(book);
                         await _context.SaveChangesAsync();
-
-                        // Redirect to the Index page
                         return RedirectToAction(nameof(Index));
                     }
-                    else
-                    {
-                        ModelState.AddModelError("uploadedFile", "Please upload a valid file.");
-                    }
+
+                    ModelState.AddModelError("uploadedFile", "Please upload a valid file.");
                 }
             }
             catch (Exception ex)
             {
-                // Add the full error message to the ModelState for debugging
-                ModelState.AddModelError("", $"An unexpected error occurred: {ex.InnerException?.Message ?? ex.Message}");
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
             }
 
-            // Return the view with error messages if something goes wrong
             return View(book);
         }
-
-
 
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            if (book == null) return NotFound();
+
             return View(book);
         }
 
-
         // POST: Books/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Title,Author,Description")] Book updatedBook)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(updatedBook);
+
+            try
             {
-                try
-                {
-                    // Retrieve the original book from the database
-                    var book = await _context.Books.FindAsync(id);
-                    if (book == null)
-                    {
-                        return NotFound();
-                    }
+                var book = await _context.Books.FindAsync(id);
+                if (book == null) return NotFound();
 
-                    // Update only the editable fields
-                    book.Title = updatedBook.Title;
-                    book.Author = updatedBook.Author;
-                    book.Description = updatedBook.Description;
+                book.Title = updatedBook.Title;
+                book.Author = updatedBook.Author;
+                book.Description = updatedBook.Description;
 
-                    // Save the changes to the database
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Update(book);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(updatedBook);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookExists(id)) return NotFound();
+                throw;
+            }
         }
-
 
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookId == id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            var book = await _context.Books.FirstOrDefaultAsync(m => m.BookId == id);
+            if (book == null) return NotFound();
 
             return View(book);
         }
@@ -196,45 +175,45 @@ namespace BookStoreApp.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
+                // Delete the file from the filesystem
+                if (!string.IsNullOrEmpty(book.FilePath))
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.FilePath.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
+                // Remove the book from the database
                 _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+
+        // GET: Books/Download/5
+        [HttpGet]
+        public async Task<IActionResult> Download(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null) return NotFound("Book not found.");
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.FilePath.TrimStart('/'));
+            if (!System.IO.File.Exists(filePath)) return NotFound("File not found.");
+
+            book.DownloadCount++;
+            await _context.SaveChangesAsync();
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
         }
 
         private bool BookExists(int id)
         {
             return _context.Books.Any(e => e.BookId == id);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Download(int id)
-        {
-            // Retrieve the book by its ID
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound("Book not found.");
-            }
-
-            // Get the full file path from the database
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.FilePath.TrimStart('/'));
-
-            // Check if the file exists
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("File not found.");
-            }
-
-            // Increment the DownloadCount
-            book.DownloadCount++;
-            await _context.SaveChangesAsync();
-
-            // Serve the file for download
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
-        }
-
     }
 }

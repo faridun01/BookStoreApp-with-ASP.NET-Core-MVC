@@ -1,31 +1,184 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+/* General Styling */
+html, body {
+    min-width: 1024px; /* Minimum width */
+    min-height: 768px; /* Minimum height */
+    height: 100%; /* Ensure full height for flexbox layout */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif; /* Default font for the page */
+    display: flex; /* Flexbox for sticky footer */
+    flex-direction: column; /* Stack elements vertically */
 }
 
 body {
-  margin-bottom: 60px;
+    flex: 1; /* Allow body content to grow */
+    margin-bottom: 0; /* Ensure no unnecessary space below */
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Typography Scaling */
+html {
+    font-size: 14px;
+    position: relative;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+@media (min-width: 768px) {
+    html {
+        font-size: 16px; /* Larger font size for larger screens */
+    }
+}
+
+/* Button Focus and Hover Styles */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb; /* Highlight on focus */
+    transition: box-shadow 0.3s ease; /* Smooth focus transition */
+}
+
+/* Placeholder Styling for Forms */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end; /* Align placeholder text to the end */
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start; /* Align placeholder text to the start on focus */
+}
+
+/* Carousel Styling */
+.custom-carousel {
+    width: 80%; /* Carousel width */
+    margin: 20px auto; /* Center carousel */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Prevent overflow */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow */
+}
+
+    .custom-carousel img {
+        object-fit: cover; /* Ensure images fit dimensions */
+        height: 400px; /* Consistent height */
+    }
+
+/* Carousel Caption Styling */
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    padding: 15px;
+    border-radius: 5px;
+}
+
+    .carousel-caption h5 {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .carousel-caption p {
+        color: #ddd;
+        font-size: 1rem;
+    }
+
+/* Ideas Section Styling */
+.container-fluid .row {
+    margin-top: 30px;
+}
+
+.container-fluid .col-4 {
+    background: #fff; /* White background for sections */
+    border: 1px solid #e0e0e0; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover */
+}
+
+    .container-fluid .col-4:hover {
+        transform: translateY(-10px); /* Lift effect on hover */
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+    }
+
+    .container-fluid .col-4 h3 {
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .container-fluid .col-4 p {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .container-fluid .col-4 .btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        background-color: #007bff; /* Primary color */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .container-fluid .col-4 .btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+        }
+
+/* Footer Styling */
+footer {
+    background-color: darkslategray; /* Consistent footer background */
+    color: #eaeaea;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    width: 100%;
+}
+
+    footer h6 {
+        font-weight: bold;
+        color: #fff;
+    }
+
+    footer p {
+        margin: 0;
+    }
+
+    footer a.text-muted:hover {
+        color: #ffd700;
+        text-decoration: none;
+    }
+
+/* Navbar Styling */
+.navbar-custom {
+    color: white; /* Text color */
+}
+
+    .navbar-custom .nav-link {
+        color: white; /* Ensure links are white */
+        transition: color 0.3s ease; /* Smooth hover effect */
+    }
+
+        .navbar-custom .nav-link:hover {
+            color: lightgray;
+        }
+
+/* Utility Classes */
+.connect-with-us {
+    text-align: left; /* Align everything to the left */
+    padding-left: 10px; /* Adjust the left padding as needed */
+}
+
+.custom-icon {
+    font-size: 20px; /* Adjust the size of icons */
+    margin-right: 8px; /* Add spacing between icon and text */
+}
+
+.custom-link {
+    text-decoration: none; /* Remove underline */
+    display: block; /* Ensure each link occupies its own line */
+    margin-bottom: 10px; /* Add spacing between links */
+}
+
+.bg-darkslategray {
+    background-color: darkslategray;
+    color: white !important;
 }
