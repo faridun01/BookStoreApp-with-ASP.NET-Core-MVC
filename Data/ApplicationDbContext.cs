@@ -13,6 +13,5 @@ namespace BookStoreApp.Data
         }
 
         public DbSet<Book> Books { get; set; }
-        public DbSet<IdentityUser> IdentityUsers { get; set; }
     }
 }
