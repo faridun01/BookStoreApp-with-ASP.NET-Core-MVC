@@ -24,10 +24,8 @@ namespace BookStoreApp.Controllers
 
         public async Task<IActionResult> About()
         {
-            // Fetch all books from the database asynchronously
             var books = await _context.Books.ToListAsync();
 
-            // Pass the books to the AboutViewModel
             var viewModel = new AboutViewModel
             {
                 Books = books
@@ -185,7 +183,6 @@ namespace BookStoreApp.Controllers
                     }
                 }
 
-                // Remove the book from the database
                 _context.Books.Remove(book);
                 await _context.SaveChangesAsync();
             }
