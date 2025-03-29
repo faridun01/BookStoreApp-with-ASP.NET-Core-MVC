@@ -1,48 +1,43 @@
 ﻿@model BookStoreApp.Models.Book
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Book Details";
 }
 
-<h1>Details</h1>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow rounded-4 border-0">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h4 class="mb-0"><i class="fas fa-book me-2"></i>Book Details</h4>
+                </div>
+                <div class="card-body px-5 py-4">
+                    <dl class="row fs-5">
+                        <dt class="col-sm-4 text-muted"><i class="fas fa-heading me-2 text-primary"></i>Title</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)</dd>
 
-<div>
-    <h4>Book</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            Title:
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            Author:
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class = "col-sm-2">
-            Description:
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            Upload Date:
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UploadDate)
-        </dd>
-        <dt class = "col-sm-2">
-            Download Count:
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DownloadCount)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" class="btn btn-info" asp-route-id="@Model?.BookId">Edit</a> 
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        <dt class="col-sm-4 text-muted"><i class="fas fa-user-edit me-2 text-primary"></i>Author</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Author)</dd>
+
+                        <dt class="col-sm-4 text-muted"><i class="fas fa-align-left me-2 text-primary"></i>Description</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+
+                        <dt class="col-sm-4 text-muted"><i class="fas fa-calendar-alt me-2 text-primary"></i>Upload Date</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.UploadDate)</dd>
+
+                        <dt class="col-sm-4 text-muted"><i class="fas fa-download me-2 text-primary"></i>Download Count</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.DownloadCount)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-light text-end rounded-bottom-4">
+                    <a asp-action="Edit" asp-route-id="@Model?.BookId" class="btn btn-outline-info me-2">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
